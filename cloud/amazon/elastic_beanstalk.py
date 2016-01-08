@@ -63,12 +63,12 @@ options:
       - A list of environment option values as specified by the Elastic Beanstalk API-based CLI
     required: true
     default: null
-    choices: [ "present, "absent", "restarted" ]
   state:
     description:
       - The desired state of the EB environment
     required: true
     default: null
+    choices: [ "present, "absent", "restarted" ]
   redeploy:
     description:
       - When state is 'present' and the CNAME prefix is already in use, this parameter determines >
