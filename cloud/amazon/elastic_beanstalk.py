@@ -187,7 +187,8 @@ def make_present(module, beanstalk):
 
     ss_response = beanstalk.list_available_solution_stacks()["ListAvailableSolutionStacksResponse"]
     available_solution_stacks = ss_response["ListAvailableSolutionStacksResult"]["SolutionStacks"]
-
+    if not solution_stack:
+        module.fail_json(msg="A solution stack must be provided.")
     if solution_stack not in available_solution_stacks:
         module.fail_json(
             msg=(
