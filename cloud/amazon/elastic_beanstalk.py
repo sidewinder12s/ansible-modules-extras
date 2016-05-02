@@ -68,7 +68,7 @@ options:
       - The desired state of the EB environment
     required: true
     default: null
-    choices: [ "present, "absent", "restarted" ]
+    choices: [ 'present', 'absent', 'restarted' ]
   redeploy:
     description:
       - When state is 'present' and the CNAME prefix is already in use, this parameter determines >
@@ -82,6 +82,7 @@ EXAMPLES = """
 # Create an environment
  - elastic_beanstalk:
     application_name: my_application
+    region: us-east-1
     application_version: 1.0
     cname: my_cname
     application_s3_bucket: my_bucket
@@ -97,6 +98,7 @@ EXAMPLES = """
 # with the existing environment
  - elastic_beanstalk:
    application_name: my_application
+   region: us-east-1
    application_version: 2.0
    cname: my_cname
    application_s3_bucket: my_bucket
@@ -112,12 +114,14 @@ EXAMPLES = """
 # Restart an environment
   - elastic_beanstalk:
       application_name: my_application
+      region: us-east-1
       environment_name: my_environment
       state: restarted
 
 # Terminate an environment
   - elastic_beanstalk:
     application_name: my_application
+    region: us-east-1
     environment_name: my_environment
     state: absent
 """
@@ -437,7 +441,7 @@ def main():
         module.fail_json(msg='boto required for this module')
     region, ec2_url, aws_connect_kwargs = get_aws_connection_info(module)
     aws_connect_kwargs.pop("validate_certs")
-    beanstalk = boto.connect_beanstalk(**aws_connect_kwargs)
+    beanstalk = boto.beanstalk.connect_to_region(region, **aws_connect_kwargs)
 
     state = module.params.get("state")
     if state == "present":
