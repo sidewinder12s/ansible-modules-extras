@@ -13,21 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-DOCUMENTATION = """
+DOCUMENTATION = '''
 ---
 module: elastic_beanstalk
 short_description: Manage environments in Elastic Beanstalk.
 description:
     - This module allows the user to create, terminate, or restart Elastic Beanstalk environments. >
         This module has a dependency on python-boto.
-version_added: "2.0"
+version_added: "2.2"
 author: "Alec Disharoon (adisharoon-socialware)"
 options:
   application_name:
     description:
       - The name of the Elastic Beanstalk application
     required: true
-    default: null
   application_version:
     description:
       - The version of the Elastic Beanstalk application
@@ -35,7 +34,7 @@ options:
     default: null
   environment_name:
     description:
-      - The name of the Elastic Beanstalk environment
+      - The name of the Elastic Beanstalk environment. If specified it must be unique in the region.
     required: false
     default: Randomly generated
   cname:
@@ -62,13 +61,12 @@ options:
     description:
       - A list of environment option values as specified by the Elastic Beanstalk API-based CLI
     required: true
-    default: null
   state:
     description:
       - The desired state of the EB environment
-    required: true
-    default: null
+    required: false
     choices: [ 'present', 'absent', 'restarted' ]
+    default: present
   redeploy:
     description:
       - When state is 'present' and the CNAME prefix is already in use, this parameter determines >
@@ -76,9 +74,9 @@ options:
     required: true
     default: false
 extends_documentation_fragment: aws
-"""
+'''
 
-EXAMPLES = """
+EXAMPLES = '''
 # Create an environment
  - elastic_beanstalk:
     application_name: my_application
@@ -124,7 +122,19 @@ EXAMPLES = """
     region: us-east-1
     environment_name: my_environment
     state: absent
-"""
+'''
+
+RETURN = '''
+Environment:
+  description: Details of the deployed environment
+  returned: success
+  type: list
+  sample:
+    ApplicationName: example-app
+    CNAME: example.us-west-2.elasticbeanstalk.com
+    EnvironmentName: example-env
+'''
+
 
 import string
 import time
@@ -426,7 +436,7 @@ def main():
             application_s3_key=dict(),
             solution_stack=dict(),
             environment_options=dict(type="list"),
-            state=dict(choices=["present", "absent", "restarted"], required=True),
+            state=dict(default="present", choices=["present", "absent", "restarted"]),
             redeploy=dict(default=False, type="bool")
         )
     )
